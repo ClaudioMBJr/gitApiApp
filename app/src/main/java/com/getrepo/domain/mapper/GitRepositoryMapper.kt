@@ -1,13 +1,13 @@
 package com.getrepo.domain.mapper
 
-import com.getrepo.data.remote.dto.ItemsResponse
+import com.getrepo.data.local.entity.ItemEntity
 import com.getrepo.domain.model.GitRepository
 
-fun ItemsResponse.toGitRepository() =
+fun ItemEntity.toGitRepository() =
     GitRepository(
-        repositoryName = name,
-        ownerName = owner.login,
-        ownerAvatarUrl = owner.avatarUrl,
-        amountOfStars = stargazersCount,
-        amountOfForks = forksCount
+        repositoryName = repositoryName,
+        ownerName = ownerName,
+        ownerAvatarUrl = ownerAvatarUrl,
+        amountOfStars = amountOfStars,
+        amountOfForks = amountOfForks
     )

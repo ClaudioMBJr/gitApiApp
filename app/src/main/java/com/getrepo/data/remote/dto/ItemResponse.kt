@@ -2,7 +2,7 @@ package com.getrepo.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class ItemsResponse(
+data class ItemResponse(
     val name: String,
     val owner: OwnerResponse,
     @SerializedName("stargazers_count")

@@ -1,5 +1,6 @@
 package com.getrepo.presentation.listRepo
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,11 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +38,11 @@ fun ListScreen(
     vm: ListScreenViewModel = hiltViewModel()
 ) {
     val listScreenState = vm.listScreenState
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = Unit) {
+        vm.getRepositories()
+    }
 
     if (vm.listScreenState.isLoading)
         Row(
@@ -45,6 +53,27 @@ fun ListScreen(
         ) {
             CircularProgressIndicator()
         }
+
+    if (vm.listScreenState.hasError) {
+        if (vm.listScreenState.items.isEmpty())
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Não foi possível carregar os repositórios",
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                )
+            }
+        else
+            Toast.makeText(context, "Não foi possível carregar mais notícias", Toast.LENGTH_SHORT)
+                .show()
+    }
 
     LazyColumn(
         modifier = Modifier

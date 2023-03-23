@@ -1,7 +1,7 @@
 package com.getrepo.data.remote
 
 import com.getrepo.common.Constants.ITEMS_PER_PAGE
-import com.getrepo.data.remote.dto.GitRespositoriesResponse
+import com.getrepo.data.remote.dto.GitRepositoriesResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -11,5 +11,5 @@ interface GitApi {
     suspend fun getRepositories(
         @Query("page") page: Int,
         @Query("per_page") amountOfItems: Int = ITEMS_PER_PAGE,
-    ): GitRespositoriesResponse
+    ): GitRepositoriesResponse
 }

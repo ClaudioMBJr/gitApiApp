@@ -1,5 +1,6 @@
 package com.getrepo.presentation.listRepo
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,14 +30,12 @@ class ListScreenViewModel @Inject constructor(
     var hasMoreItems = true
         private set
 
-    init {
-        getRepositories()
-    }
 
-    private fun getRepositories() {
+    fun getRepositories() {
         viewModelScope.launch(coroutineDispatcher) {
             listScreenState = try {
-                handleResult(getRepositoriesUseCase(page))
+                val result = getRepositoriesUseCase(page)
+                handleResult(result)
 
                 listScreenState.copy(
                     isLoading = false,
@@ -53,7 +52,8 @@ class ListScreenViewModel @Inject constructor(
         }
     }
 
-    private fun handleResult(repositories: List<GitRepository>) {
+    @VisibleForTesting
+    fun handleResult(repositories: List<GitRepository>) {
         if (repositories.size < ITEMS_PER_PAGE)
             hasMoreItems = false
         else
@@ -68,5 +68,5 @@ class ListScreenViewModel @Inject constructor(
     }
 
     fun canRequestMoreItems() =
-        hasMoreItems && !listScreenState.isLoadingMoreItems && !listScreenState.hasError
+        hasMoreItems && !listScreenState.isLoadingMoreItems
 }

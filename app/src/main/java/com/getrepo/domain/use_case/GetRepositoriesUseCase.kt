@@ -8,6 +8,6 @@ class GetRepositoriesUseCase @Inject constructor(private val gitApiRepository: G
 
     suspend operator fun invoke(page: Int) =
         gitApiRepository.getRepositories(page)
-            .getOrThrow().items.map { it.toGitRepository() }
+            .getOrThrow().map { it.toGitRepository() }
 
 }
