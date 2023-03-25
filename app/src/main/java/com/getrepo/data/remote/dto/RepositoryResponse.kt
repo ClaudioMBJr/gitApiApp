@@ -2,7 +2,7 @@ package com.getrepo.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class GitRepositoriesResponse(
+data class RepositoryResponse(
     @SerializedName("total_count")
     val totalCount: Int,
     @SerializedName("incomplete_results")

@@ -3,10 +3,9 @@ package com.getrepo.data.di
 import android.content.Context
 import androidx.room.Room
 import com.getrepo.common.Constants.BASE_URL
-import com.getrepo.data.local.AppDatabase
-import com.getrepo.data.local.GitRepositoriesDao
-import com.getrepo.data.remote.GitApi
-import com.getrepo.data.repository.GitApiRepository
+import com.getrepo.common.Constants.DATABASE_NAME
+import com.getrepo.data.local.RepositoriesDatabase
+import com.getrepo.data.remote.RepositoriesApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +23,7 @@ object GetRepoDataDI {
 
     @Provides
     @Singleton
-    fun providesGitApi(): GitApi =
+    fun providesRepositoriesApi(): RepositoriesApi =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -35,23 +34,13 @@ object GetRepoDataDI {
                             .setLevel(HttpLoggingInterceptor.Level.BODY)
                     )
                     .build()
-            ).build().create(GitApi::class.java)
-
-    @Provides
-    @Singleton
-    fun providesGitApiRepository(gitAPI: GitApi, gitRepositoriesDao: GitRepositoriesDao): GitApiRepository =
-        GitApiRepository(gitAPI, gitRepositoriesDao)
-
+            ).build().create(RepositoriesApi::class.java)
 
     @Provides
     @Singleton
     fun createDB(
         @ApplicationContext context: Context
-    ): AppDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "database")
-        .build()
-
-    @Provides
-    @Singleton
-    fun providesGitRepositoriesDao(appDatabase: AppDatabase): GitRepositoriesDao =
-        appDatabase.gitRepositoriesDao()
+    ): RepositoriesDatabase =
+        Room.databaseBuilder(context, RepositoriesDatabase::class.java, DATABASE_NAME)
+            .build()
 }
