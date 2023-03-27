@@ -1,6 +1,6 @@
 package com.getrepo.domain.model
 
-data class GitRepository(
+data class Repository(
     val repositoryName: String,
     val ownerName: String,
     val ownerAvatarUrl: String,

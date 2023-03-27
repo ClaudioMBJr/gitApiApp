@@ -1,8 +1,8 @@
-package com.getrepo.data.local
+package com.getrepo.data.source.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.getrepo.data.local.entity.RepositoryEntity
+import com.getrepo.data.source.local.entity.RepositoryEntity
 
 @Database(entities = [RepositoryEntity::class], version = 1)
 abstract class RepositoriesDatabase : RoomDatabase() {

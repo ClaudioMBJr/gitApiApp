@@ -1,4 +1,4 @@
-package com.getrepo.data.local.entity
+package com.getrepo.data.source.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,7 +1,6 @@
 package com.getrepo.domain.di
 
-import com.getrepo.data.local.RepositoriesDatabase
-import com.getrepo.data.remote.RepositoriesApi
+import com.getrepo.data.source.repository.RepositoriesRepository
 import com.getrepo.domain.use_case.GetRepositoriesUseCase
 import dagger.Module
 import dagger.Provides
@@ -16,6 +15,6 @@ object GetRepoDomainDI {
 
     @ViewModelScoped
     @Provides
-    fun providesGetRepositoriesUseCase(gitApi: RepositoriesApi, database: RepositoriesDatabase) =
-        GetRepositoriesUseCase(gitApi, database)
+    fun providesGetRepositoriesUseCase(repositoriesRepository: RepositoriesRepository) =
+        GetRepositoriesUseCase(repositoriesRepository)
 }

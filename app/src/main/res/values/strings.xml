@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">GetRepo</string>
+
+    <string name="text_error_loading_first_page">Não foi possível carregar os repositórios</string>
+    <string name="text_error_loading_more_items">Não foi possível carregar mais repositórios</string>
+    <string name="text_btn_try_again">Tentar novamente</string>
+
+    <string name="text_repo">Repo: %s</string>
+    <string name="text_owner">Owner: %s</string>
+    <string name="text_stars">Stars: %s</string>
+    <string name="text_forks">Forks: %s</string>
 </resources>

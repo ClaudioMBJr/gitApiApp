@@ -7,16 +7,16 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.getrepo.common.Constants.INITIAL_PAGE
 import com.getrepo.common.Constants.LIMIT_OF_ITEMS
-import com.getrepo.data.local.RepositoriesDatabase
-import com.getrepo.data.local.entity.RepositoryEntity
-import com.getrepo.data.mapper.toRepositoryEntity
-import com.getrepo.data.remote.RepositoriesApi
-import javax.inject.Inject
+import com.getrepo.data.source.local.RepositoriesDatabase
+import com.getrepo.data.source.local.entity.RepositoryEntity
+import com.getrepo.data.source.local.mapper.toRepositoryEntity
+import com.getrepo.data.source.remote.RepositoriesApi
 
 @OptIn(ExperimentalPagingApi::class)
-class RepositoriesDataSource @Inject constructor(
-    private val repository: RepositoriesApi,
-    private val database: RepositoriesDatabase
+class RepositoriesMediator(
+    private val api: RepositoriesApi,
+    private val database: RepositoriesDatabase,
+    private val maxOfItems: Int = LIMIT_OF_ITEMS
 ) : RemoteMediator<Int, RepositoryEntity>() {
 
     override suspend fun load(
@@ -36,7 +36,7 @@ class RepositoriesDataSource @Inject constructor(
         }
 
         return try {
-            val result = repository.getRepositories(page)
+            val result = api.getRepositories(page)
             val repositoriesEntity = result.items.map { it.toRepositoryEntity() }
             var endOfPaginationReached = false
 
@@ -48,7 +48,7 @@ class RepositoriesDataSource @Inject constructor(
 
                 repositoriesDao.insertAll(repositoriesEntity.onEach { it.page = page })
 
-                endOfPaginationReached = repositoriesDao.getAmountOfItems() == LIMIT_OF_ITEMS
+                endOfPaginationReached = repositoriesDao.getAmountOfItems() >= maxOfItems
             }
 
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)

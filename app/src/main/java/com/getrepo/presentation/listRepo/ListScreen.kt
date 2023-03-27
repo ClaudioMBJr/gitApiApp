@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -31,15 +32,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
+import com.getrepo.R
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ListScreen(
     vm: ListScreenViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val repositories = vm.getRepositories().collectAsLazyPagingItems()
+
+//    val state = vm.listScreenState
 
     LazyColumn(
         modifier = Modifier
@@ -56,44 +63,78 @@ fun ListScreen(
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.Gray),
-                        painter = rememberImagePainter(
-                            data = gitRepository.ownerAvatarUrl,
-                        ),
-                        contentDescription = gitRepository.ownerName,
-                        contentScale = ContentScale.Crop,
+
+                    val painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(gitRepository.ownerAvatarUrl)
+                            .size(Size.ORIGINAL)
+                            .crossfade(true)
+                            .placeholder(R.drawable.baseline_error_outline_24)
+                            .placeholder(R.drawable.baseline_error_outline_24)
+                            .build()
                     )
+
+                    when (painter.state) {
+                        is AsyncImagePainter.State.Loading ->
+                            Column(
+                                modifier = Modifier.size(100.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        else -> {
+                            Image(
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(Color.Gray),
+                                painter = painter,
+                                contentDescription = gitRepository.ownerName,
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.width(16.dp))
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = "Repo: ${gitRepository.repositoryName}",
+                            text = context.getString(
+                                R.string.text_repo,
+                                gitRepository.repositoryName
+                            ),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Owner: ${gitRepository.ownerName}",
+                            text = context.getString(
+                                R.string.text_owner,
+                                gitRepository.ownerName
+                            ),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Stars: ${gitRepository.amountOfStars}",
+                            text = context.getString(
+                                R.string.text_stars,
+                                gitRepository.amountOfStars.toString()
+                            ),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Forks: ${gitRepository.amountOfForks}",
+                            text = context.getString(
+                                R.string.text_forks,
+                                gitRepository.amountOfForks.toString()
+                            ),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                             color = Color.Black
@@ -103,58 +144,45 @@ fun ListScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
-        when (repositories.loadState.refresh) {
-            is LoadState.Loading -> {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillParentMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        item {
+            if (repositories.loadState.refresh is LoadState.Loading)
+                Row(
+                    modifier = Modifier
+                        .fillParentMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator()
                 }
-            }
-            is LoadState.Error -> {
-                item {
-                    ListScreenError(
-                        Modifier.fillParentMaxSize(),
-                        "Não foi possível carregar os repositórios"
-                    ) {
-                        repositories.retry()
-                    }
-                }
-            }
-            else -> Unit
-        }
 
-        when (repositories.loadState.append) {
-            is LoadState.Loading -> {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+            if (repositories.loadState.refresh is LoadState.Error) {
+                ListScreenError(
+                    modifier = if (repositories.itemCount != 0) Modifier.fillMaxWidth() else Modifier.fillParentMaxSize(),
+                    contentText = context.getString(R.string.text_error_loading_first_page),
+                    buttonText = context.getString(R.string.text_btn_try_again)
+                ) {
+                    repositories.retry()
                 }
             }
 
-            is LoadState.Error -> {
-                item {
-                    ListScreenError(
-                        Modifier.fillMaxWidth(),
-                        "Não foi possível carregar mais repositórios"
-                    ) {
-                        repositories.retry()
-                    }
+            if (repositories.loadState.append is LoadState.Loading)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator()
                 }
-            }
-            else -> Unit
+
+            if (repositories.loadState.append is LoadState.Error)
+                ListScreenError(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentText = context.getString(R.string.text_error_loading_more_items),
+                    buttonText = context.getString(R.string.text_btn_try_again)
+                ) {
+                    repositories.retry()
+                }
         }
     }
 }
@@ -163,7 +191,7 @@ fun ListScreen(
 private fun ListScreenError(
     modifier: Modifier = Modifier,
     contentText: String,
-    buttonText: String = "Tentar novamente",
+    buttonText: String,
     onClick: () -> Unit
 ) {
     Column(

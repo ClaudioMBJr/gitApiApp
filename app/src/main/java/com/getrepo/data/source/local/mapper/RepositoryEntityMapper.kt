@@ -1,7 +1,7 @@
-package com.getrepo.data.mapper
+package com.getrepo.data.source.local.mapper
 
-import com.getrepo.data.local.entity.RepositoryEntity
-import com.getrepo.data.remote.dto.ItemResponse
+import com.getrepo.data.source.local.entity.RepositoryEntity
+import com.getrepo.data.source.remote.dto.ItemResponse
 
 fun ItemResponse.toRepositoryEntity() =
     RepositoryEntity(

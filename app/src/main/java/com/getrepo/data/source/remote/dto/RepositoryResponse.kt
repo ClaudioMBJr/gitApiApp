@@ -1,4 +1,4 @@
-package com.getrepo.data.remote.dto
+package com.getrepo.data.source.remote.dto
 
 import com.google.gson.annotations.SerializedName
 

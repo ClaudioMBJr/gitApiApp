@@ -1,7 +1,7 @@
-package com.getrepo.data.remote
+package com.getrepo.data.source.remote
 
 import com.getrepo.common.Constants.ITEMS_PER_PAGE
-import com.getrepo.data.remote.dto.RepositoryResponse
+import com.getrepo.data.source.remote.dto.RepositoryResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
