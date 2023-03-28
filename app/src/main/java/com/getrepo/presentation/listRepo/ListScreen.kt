@@ -25,13 +25,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -46,21 +48,22 @@ fun ListScreen(
 
     val repositories = vm.getRepositories().collectAsLazyPagingItems()
 
-//    val state = vm.listScreenState
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
+            .testTag("lazyColumn")
             .padding(top = 16.dp, end = 16.dp, start = 16.dp)
     ) {
-        items(repositories) { gitRepository ->
+        itemsIndexed(repositories) { index, gitRepository ->
             gitRepository?.let {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(4.dp))
                         .background(Color.Gray)
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .testTag("itemId${index + 1}")
+                        .semantics { "itemId${index + 1}" },
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
 
@@ -145,44 +148,55 @@ fun ListScreen(
             }
         }
         item {
-            if (repositories.loadState.refresh is LoadState.Loading)
-                Row(
-                    modifier = Modifier
-                        .fillParentMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CircularProgressIndicator()
+            when {
+                repositories.loadState.refresh is LoadState.Loading -> {
+                    if (repositories.loadState.refresh is LoadState.Error)
+                        Row(
+                            modifier = Modifier
+                                .fillParentMaxSize()
+                                .testTag("progressFirstPage"),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator()
+                        }
                 }
-
-            if (repositories.loadState.refresh is LoadState.Error) {
-                ListScreenError(
-                    modifier = if (repositories.itemCount != 0) Modifier.fillMaxWidth() else Modifier.fillParentMaxSize(),
-                    contentText = context.getString(R.string.text_error_loading_first_page),
-                    buttonText = context.getString(R.string.text_btn_try_again)
-                ) {
-                    repositories.retry()
+                repositories.loadState.refresh is LoadState.Error -> {
+                    ListScreenError(
+                        modifier = if (repositories.itemCount != 0) Modifier
+                            .fillMaxWidth()
+                            .testTag("errorWithItems") else Modifier
+                            .fillParentMaxSize()
+                            .testTag("errorFirstPage"),
+                        contentText = context.getString(R.string.text_error_loading_first_page),
+                        buttonText = context.getString(R.string.text_btn_try_again)
+                    ) {
+                        repositories.retry()
+                    }
+                }
+                repositories.loadState.append is LoadState.Loading -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("progressWithItems"),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                repositories.loadState.append is LoadState.Error -> {
+                    ListScreenError(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("errorWithItems"),
+                        contentText = context.getString(R.string.text_error_loading_more_items),
+                        buttonText = context.getString(R.string.text_btn_try_again)
+                    ) {
+                        repositories.retry()
+                    }
                 }
             }
-
-            if (repositories.loadState.append is LoadState.Loading)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CircularProgressIndicator()
-                }
-
-            if (repositories.loadState.append is LoadState.Error)
-                ListScreenError(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentText = context.getString(R.string.text_error_loading_more_items),
-                    buttonText = context.getString(R.string.text_btn_try_again)
-                ) {
-                    repositories.retry()
-                }
         }
     }
 }

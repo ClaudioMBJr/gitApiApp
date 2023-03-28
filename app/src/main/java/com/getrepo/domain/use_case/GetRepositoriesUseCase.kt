@@ -13,5 +13,4 @@ class GetRepositoriesUseCase(
         repositoriesRepository.getRepositories()
             .map { pagingData -> pagingData.map { it.toRepository() } }
 
-
 }

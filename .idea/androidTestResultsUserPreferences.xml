@@ -3,7 +3,64 @@
   <component name="AndroidTestResultsUserPreferences">
     <option name="androidTestResultsTableState">
       <map>
+        <entry key="-941730949">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Resizable_Experimental_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="-603857840">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="192.168.100.83:34085" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Resizable_Experimental_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-S901E" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="202780476">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Resizable_Experimental_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1473148155">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="192.168.100.83:34085" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="RXCT4029TFB" value="120" />
+                  <entry key="Resizable_Experimental_API_33" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-S901E" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1781136629">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">

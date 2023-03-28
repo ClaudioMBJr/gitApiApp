@@ -18,7 +18,7 @@ class RepositoriesRepository(
         Pager(
             config = PagingConfig(
                 pageSize = Constants.ITEMS_PER_PAGE,
-                initialLoadSize = Constants.ITEMS_PER_PAGE, // How many items you want to load initially
+                initialLoadSize = Constants.ITEMS_PER_PAGE,
             ),
             pagingSourceFactory = {
                 database.repositoriesDao().getAll()
